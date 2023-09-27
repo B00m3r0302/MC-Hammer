@@ -1,0 +1,7 @@
+os==0.1.1
+sqlite3==2.6.0
+subprocess==1.0.0
+cmd==1.2.0
+schedule==0.6.0
+difflib==1.0.1
+logging==0.5.1.2

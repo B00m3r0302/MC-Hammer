@@ -1,0 +1,35 @@
+
+    classDiagram
+        class Main{
+            +def __init__(self)
+            +def run(self)
+        }
+        class Scanner{
+            +def __init__(self)
+            +def scan(self)
+            +def compare(self)
+        }
+        class Database{
+            +def __init__(self)
+            +def store(self, data)
+            +def retrieve(self)
+        }
+        class Menu{
+            +def __init__(self)
+            +def display(self)
+            +def update(self)
+        }
+        class Logger{
+            +def __init__(self)
+            +def log(self, message)
+        }
+        class Actions{
+            +def __init__(self)
+            +def execute(self, action)
+        }
+        Main -- Scanner : uses
+        Main -- Database : uses
+        Main -- Menu : uses
+        Main -- Logger : uses
+        Main -- Actions : uses
+    
