@@ -153,6 +153,11 @@ class Scanner:
         
         conn.commit()
         conn.close()
+        
+    def Baseline_Scan(self):
+        self.BaselineExecutableScan()
+        self.BaselineUserScan()
+    
 
 
 

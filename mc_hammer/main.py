@@ -2,7 +2,7 @@
 import schedule
 import time
 from scanner import Scanner
-from database import Database
+from mc_hammer.analysis import Database
 from menu import Menu
 from logger import Logger
 from actions import Actions
@@ -18,8 +18,7 @@ class Main:
     def run(self):
         try:
             # Initial scan
-            scan_results = self.scanner.scan()
-            self.database.store('base_scan', scan_results)
+            self.scanner.Baseline_Scan()
 
             # Schedule the scan every 15 minutes
             schedule.every(15).minutes.do(self.scheduled_scan)
@@ -33,10 +32,8 @@ class Main:
     def scheduled_scan(self):
         try:
             # Perform scan
-            scan_results = self.scanner.scan()
-
-            # Store scan results
-            self.database.store('scan_results', scan_results)
+            self.scanner.CurrentExecutableScan()
+            self.scanner.CurrentUserScan()
 
             # Compare scan results with base scan
             base_scan = self.database.retrieve('base_scan')
