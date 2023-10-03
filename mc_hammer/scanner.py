@@ -1,6 +1,4 @@
 import os
-import difflib
-import psutil
 import hashlib
 import sqlite3
 import win32net
@@ -157,6 +155,15 @@ class Scanner:
     def Baseline_Scan(self):
         self.BaselineExecutableScan()
         self.BaselineUserScan()
+        
+    def Scan(self):
+        self.CurrentExecutableScan()
+        self.CurrentUserScan()
+        
+if __name__ == "__main__":
+    scanner = Scanner()
+    scanner.Baseline_Scan()
+    scanner.Scan()
     
 
 

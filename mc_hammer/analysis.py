@@ -72,9 +72,12 @@ class Analysis:
             )
         '''
         cursor.execute(query)
+        
+    def get_discrepancies():
+        analysis.find_executable_discrepancies()
+        analysis.find_account_discrepancies()
 
 if __name__ == "__main__":
     analysis = Analysis()
-    analysis.find_executable_discrepancies()
-    analysis.find_account_discrepancies()
+    analysis.get_discrepancies()
 
