@@ -33,7 +33,7 @@ class Scanner:
                                 id INTEGER PRIMARY KEY,
                                 FileName TEXT NOT NULL,
                                 FilePath TEXT NOT NULL,
-                                md5Hash TEXT NOT NULL
+                                md5Hash TEXT
                             )
                         ''')
             conn.commit()
