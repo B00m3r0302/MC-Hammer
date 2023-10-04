@@ -29,7 +29,7 @@ class Scanner:
             conn.commit()
 
             cursor.execute('''
-                            CREATE TABLE IF NOT EXISTS CurrentExecutables (
+                            CREATE TABLE IF NOT EXISTS ExecutableDiscrepancies (
                                 id INTEGER PRIMARY KEY,
                                 FileName TEXT NOT NULL,
                                 FilePath TEXT NOT NULL,
@@ -48,7 +48,7 @@ class Scanner:
             conn.commit()
             
             cursor.execute('''
-                            CREATE TABLE IF NOT EXISTS CurrentAccounts (
+                            CREATE TABLE IF NOT EXISTS AccountDiscrepancies (
                                 id INTEGER PRIMARY KEY,
                                 UserName TEXT NOT NULL,
                                 AccountCreationDate TEXT
@@ -132,14 +132,12 @@ class Scanner:
             # Final commit for any remaining files
             conn.commit()
 
-    ## TODO: Change the function so that it scans for executables and if the executable found is not in BaselineExecutables then it is deleted from the system
     def CurrentExecutables_Scan(self, start_dir):
         with sqlite3.connect(self.database_path) as conn:
             cursor = conn.cursor()
             commit_counter = 0
 
             # Clears the existing database for new entries 
-            cursor.execute("DELETE FROM CurrentExecutables")
             for root, dirs, files in os.walk(start_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
@@ -153,10 +151,15 @@ class Scanner:
                         print('-' * 50)
                         
                         cursor.execute('''
-                                       INSERT INTO CurrentExecutables (FileName, FilePath, md5Hash)
-                                       VALUES (?, ?, ?)
+                                       SELECT * FROM ExecutableDiscrepancies WHERE FileName = ? AND FilePath = ? and md5Hash = ? 
                         ''', (file, file_path, file_hash))
-                        commit_counter += 1
+                        
+                        if cursor.fetchone() is None:
+                            cursor.execute('''
+                                           INSERT INTO ExecutableDiscrepancies (FileName, FilePath, md5Hash)
+                                           VALUES (?, ?, ?)
+                            ''', (file, file_path, file_hash))
+                            commit_counter += 1
 
                         # Commit every 100 files for more consistent saving.
                         if commit_counter >= 100:
@@ -197,7 +200,8 @@ class Scanner:
                 print(f"Username: {username}")
                 print(f"Account Creation Approximation Date: {creation_date}")
                 print('-' * 50)
-
+                
+                
                 cursor.execute('''
                     INSERT INTO BaselineAccounts (UserName, AccountCreationDate)
                     VALUES (?, ?)
@@ -226,9 +230,14 @@ class Scanner:
                 print('-' * 50)
 
                 cursor.execute('''
-                    INSERT INTO CurrentAccounts (UserName, AccountCreationDate)
-                    VALUES (?, ?)
+                               SELECT * FROM BaselineAccounts WHERE username = ? AND AccountCreationDate = ?
                 ''', (username, creation_date))
+                
+                if cursor.fetchone() is None:
+                    cursor.execute('''
+                                   INSERT INTO AccountDiscrepancies (UserName, AccountCreationDate)
+                                   VALUES (?, ?)
+                    ''', (username, creation_date))
             
             conn.commit()
             
