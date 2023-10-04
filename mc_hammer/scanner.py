@@ -293,6 +293,29 @@ class Scanner:
         ''', (self.fetch_registry_keys(hive, subkey)))
         conn.commit()
         
+    def continuous_registry_autoruns(self):
+        with sqlite3.connect(self.database_path) as conn:
+            cursor = conn.cursor()
+        autorun_locations = [
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\Windows\\CurrentVersion\\Run"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\Windows\\CurrentVersion\\RunOnce"),
+        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\Windows\\CurrentVersion\\Run"),
+        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\Windows\\CurrentVersion\\RunOnce"),
+        ]
+        
+        for hive,subkey in autorun_locations:
+            data = self.fetch_registry_keys(hive, subkey)
+            
+            for name, value in data:
+                cursor.execute('SELECT * FROM autoruns WHERE name = ? AND value = ?', (name, value))
+                if not cursor.fetchone():
+                    try:
+                        with winreg.OpenKey(hive, subkey, 0, winreg.KEY_SET_VALUE) as key:
+                            winreg.DeleteValue(key, name)
+                            self.logger.log(f"Deleted registry autorun entry {name} with value {value}")
+                    except WindowsError as e:
+                        self.logger.log(f"Failed to delete registry entry {name} with error:{str(e)}")
+        
     def get_current_connections(self):
         with sqlite3.connect(self.database_path) as conn:
             cursor = conn.cursor()
@@ -346,7 +369,7 @@ class Scanner:
         self.logger.log("Current Users scan complete.")
         
         self.logger.log("Starting current Autoruns scan...")
-        self.fetch_registry_autoruns()
+        self.continuous_registry_autoruns()
         self.logger.log("Current Autoruns scan complete.")
         
 
