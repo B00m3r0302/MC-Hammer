@@ -6,6 +6,7 @@ from analysis import Analysis
 from menu import Menu
 from logger import Logger
 from actions import Actions
+import sqlite3
 
 class Main:
     def __init__(self):
@@ -40,12 +41,19 @@ class Main:
             self.logger.log(f"An error occurred: {str(e)}")
             
     def connection_handler(self):
+        with sqlite3.connect(self.database_path) as conn:
+            cursor = conn.cursor()
         trusted_IP = self.actions.fetch_trusted_IPs(self.database_path)
         current_connections = self.scanner.get_current_connections()
         for ip in current_connections:
             if ip not in trusted_IP:
                 self.logger.log(f"Blocking IP {ip}")
                 self.actions.block_IP(ip)
+                self.logger.log(f"IP {ip} blocked successfully")
+                cursor.execute('''
+                                INSERT INTO Blocked_IPs (IP_Address)
+                                VALUES (?)
+                ''', (ip,))
 
     def scheduled_scan(self):
         try:
