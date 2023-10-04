@@ -9,7 +9,7 @@ from actions import Actions
 
 class Main:
     def __init__(self):
-        self.scanner = Scanner()
+        self.scanner = Scanner("GuardianAngel.db")
         self.analysis = Analysis()
         self.menu = Menu()
         self.logger = Logger()
@@ -18,7 +18,8 @@ class Main:
     def run(self):
         try:
             # Initial scan
-            self.scanner.Baseline_Scan()
+            start_directory = "C:\\"
+            self.scanner.Baseline_Scan(start_directory)
 
             # Schedule the scan every 15 minutes
             schedule.every(15).minutes.do(self.scheduled_scan)
@@ -28,12 +29,21 @@ class Main:
                 time.sleep(1)
         except Exception as e:
             self.logger.log(f"An error occurred: {str(e)}")
+            
+    def connection_handler(self):
+        trusted_IP = self.actions.fetch_trusted_IPs(self.database_path)
+        current_connections = self.scanner.get_current_connections()
+        for ip in current_connections:
+            if ip not in trusted_IP:
+                self.logger.log(f"Blocking IP {ip}")
+                self.actions.block_IP(ip)
 
     def scheduled_scan(self):
         try:
             # Perform scan
+            self.connection_handler()
             self.scanner.Scan()
-
+            
             # Compare scan results with base scan
             self.analysis.get_discrepancies()
 
