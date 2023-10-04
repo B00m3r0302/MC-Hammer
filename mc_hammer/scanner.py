@@ -84,6 +84,14 @@ class Scanner:
                         ''')
             conn.commit()
             
+            cursor.execute ('''
+                            CREATE TABLE IF NOT EXISTS BlockedConnections (
+                                id INTEGER PRIMARY KEY,
+                                IP_Address TEXT NOT NULL
+                            )
+                        ''')
+            conn.commit()
+            
     def compute_md5(self, file_path):
         hasher = hashlib.md5()
         with open(file_path, 'rb') as file:
