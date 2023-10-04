@@ -7,12 +7,14 @@ import winreg
 import datetime
 import subprocess
 from logger import Logger
+from actions import Actions
 
 class Scanner:
 
     def __init__(self, database_path):
         self.database_path = database_path
         self.logger = Logger()
+        self.actions = Actions()
         self.setup_database()
 
     def setup_database(self):
@@ -288,7 +290,7 @@ class Scanner:
         cursor.execute('''
                        INSERT INTO autoruns (name, value)
                        VALUES (?, ?)
-        ''', (name, value))
+        ''', (self.fetch_registry_keys(hive, subkey)))
         conn.commit()
         
     def get_current_connections(self):
@@ -333,19 +335,28 @@ class Scanner:
         self.fetch_registry_autoruns()
         self.logger.log("Baseline Autoruns scan complete.")
     
-    def Scan (self, start_dir):
-        self.Logger.log("Starting current Executables scan...")
+    def ExecutablesScan (self, start_dir):
+        self.logger.log("Starting current Executables scan...")
         self.CurrentExecutables_Scan(start_dir)
         self.logger.log("Current Executables scan complete.")
         
-        self.Logger.log("Starting current Users scan...")
+    def Continuous_Scan(self):
+        self.logger.log("Starting current Users scan...")
         self.CurrentUsers_Scan()
         self.logger.log("Current Users scan complete.")
+        
+        self.logger.log("Starting current Autoruns scan...")
+        self.fetch_registry_autoruns()
+        self.logger.log("Current Autoruns scan complete.")
+        
+        self.logger.log("Starting current Connections scan...")
+        self.get_current_connections()
+        self.logger.log("Current Connections scan complete.")
 
 
 
 if __name__ == "__main__":
     scanner = Scanner("GuardianAngel.db")
     scanner.Baseline_Scan()
-    scanner.Scan()
-    scanner.get_current_connections()
+    scanner.ExecutablesScan()
+    scanner.Continuous_Scan()

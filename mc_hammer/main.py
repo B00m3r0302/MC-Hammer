@@ -61,7 +61,7 @@ class Main:
         try:
             # Perform scan
             self.connection_handler()
-            self.scanner.Scan()
+            self.scanner.ExecutablesScan()
             
             # Compare scan results with base scan
             self.analysis.get_discrepancies()
