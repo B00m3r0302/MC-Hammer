@@ -132,6 +132,7 @@ class Scanner:
             # Final commit for any remaining files
             conn.commit()
 
+    ## TODO: Change the function so that it scans for executables and if the executable found is not in BaselineExecutables then it is deleted from the system
     def CurrentExecutables_Scan(self, start_dir):
         with sqlite3.connect(self.database_path) as conn:
             cursor = conn.cursor()
