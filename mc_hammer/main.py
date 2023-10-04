@@ -7,6 +7,7 @@ from menu import Menu
 from logger import Logger
 from actions import Actions
 import sqlite3
+import concurrent.futures
 
 class Main:
     def __init__(self):
@@ -33,14 +34,21 @@ class Main:
             start_directory = "C:\\"
             self.scanner.Baseline_Scan(start_directory)
 
-            # Schedule the scan every 15 minutes
-            schedule.every(15).minutes.do(self.scheduled_scan)
-
-            while True:
-                schedule.run_pending()
-                time.sleep(1)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                # Start the connection handler every 10 minutes in the thread pool
+                schedule.every(10).minutes.do(lambda: executor.submit(self.connection_handler))
+                
+                # Start the ExecutablesScan every 2.5 hours in the thread pool
+                schedule.every(150).minutes.do(lambda: executor.submit(self.scanner.ExecutablesScan))
+                
+                # Start the Continuous_Scan every 10 minutes in the thread pool
+                schedule.every(10).minutes.do(lambda: executor.submit(self.scanner.Continuous_Scan))
+                
+                while True:
+                    schedule.run_pending()
+                    time.sleep(1)
         except Exception as e:
-            self.logger.log(f"An error occurred: {str(e)}")
+            self.logger.log(f"An error occurred during scheduled scan: {str(e)}")
             
     def connection_handler(self):
         with sqlite3.connect(self.database_path) as conn:
@@ -57,14 +65,15 @@ class Main:
                                 VALUES (?)
                 ''', (ip,))
 
-    def scheduled_scan(self):
-        try:
+    #def scheduled_scan(self):
+        #try:
             # Perform scan
-            self.connection_handler()
-            self.scanner.ExecutablesScan()
+            #self.connection_handler()
+            #self.scanner.ExecutablesScan()
+            #self.scanner.Continuous_Scan()
             
             # Compare scan results with base scan
-            self.analysis.get_discrepancies()
+            #self.analysis.get_discrepancies()
 
             # Log discrepancies
 
@@ -72,8 +81,8 @@ class Main:
 
             # Display scan results and discrepancies
             #self.menu.display(scan_results, discrepancies)
-        except Exception as e:
-            self.logger.log(f"An error occurred during scheduled scan: {str(e)}")
+        #except Exception as e:
+            #self.logger.log(f"An error occurred during scheduled scan: {str(e)}")
 
 if __name__ == "__main__":
     main = Main()

@@ -349,9 +349,6 @@ class Scanner:
         self.fetch_registry_autoruns()
         self.logger.log("Current Autoruns scan complete.")
         
-        self.logger.log("Starting current Connections scan...")
-        self.get_current_connections()
-        self.logger.log("Current Connections scan complete.")
 
 
 
