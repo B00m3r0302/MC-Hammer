@@ -15,6 +15,7 @@ class Main:
         self.menu = Menu()
         self.logger = Logger()
         self.actions = Actions()
+        self.database_path = "GuardianAngel.db"
 
 ## TODO: Change code to use the UI that mark is going to build 
 ## TODO: Change the run and scheduled scans so that they support different timings for the different scans
@@ -25,6 +26,7 @@ class Main:
 ## TODO: Add actions to actions.py based on detections from SnapAttack analytics 
 ## TODO: Find a way to include an AI agent, LLM, or ML into the program with deep learning and a neural network.  If not possible at this time then we should focus on ML and training the model against current detections with the automated responses. 
 ## TODO: Create an 'Alerts' table that combines all of the information from the other discrepancies tables into a single table for ease of use and viewing.
+## TODO: Build the requirements.txt file for the project
     def run(self):
         try:
             # Initial scan
