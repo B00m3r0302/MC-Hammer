@@ -2,6 +2,7 @@ import subprocess
 from logger import Logger
 import sqlite3
 import os
+import winreg
 
 
 class Actions:
@@ -26,3 +27,10 @@ class Actions:
     def remove_executable(self, file_path):
         os.remove(file_path)
         
+    def delete_registry_autorun(self, hive, subkey, name):
+        try:
+            with winreg.OpenKey(hive, subkey, 0, winreg.KEY_SET_VALUE) as key:
+                winreg.DeleteValue(key, name)
+                self.logger.log(f"Deleted registry autorun entry {name}")
+        except WindowsError as e:
+            self.logger.log(f"Error deleting registry autorun entry {name} with error: {str(e)}")

@@ -269,7 +269,7 @@ class Scanner:
         except FileNotFoundError:
             print(f"{subkey} not found.")
         except PermissionError:
-            Print(f"Permission denied accessing {subkey}. Ensure script is run with administrative permissions.")
+            print(f"Permission denied accessing {subkey}. Ensure script is run with administrative permissions.")
         return data 
     
     def fetch_registry_autoruns(self):
@@ -292,7 +292,7 @@ class Scanner:
                        VALUES (?, ?)
         ''', (self.fetch_registry_keys(hive, subkey)))
         conn.commit()
-        
+    # UPDATE THIS TO ADD THE ACTION INSTEAD OF THE CODE TO DELETE THE REGISTRY ENTRY
     def continuous_registry_autoruns(self):
         with sqlite3.connect(self.database_path) as conn:
             cursor = conn.cursor()
@@ -309,12 +309,7 @@ class Scanner:
             for name, value in data:
                 cursor.execute('SELECT * FROM autoruns WHERE name = ? AND value = ?', (name, value))
                 if not cursor.fetchone():
-                    try:
-                        with winreg.OpenKey(hive, subkey, 0, winreg.KEY_SET_VALUE) as key:
-                            winreg.DeleteValue(key, name)
-                            self.logger.log(f"Deleted registry autorun entry {name} with value {value}")
-                    except WindowsError as e:
-                        self.logger.log(f"Failed to delete registry entry {name} with error:{str(e)}")
+                    self.actions.delete_registry_autorun(hive, subkey, name)
         
     def get_current_connections(self):
         with sqlite3.connect(self.database_path) as conn:
