@@ -7,7 +7,7 @@ import winreg
 
 class Actions:
     def __init__(self, database_path):
-        self.database_path = "GuardianAngel.db"
+        self.database_path = database_path
         self.logger = Logger()
 
     def fetch_trusted_IPs(self):
