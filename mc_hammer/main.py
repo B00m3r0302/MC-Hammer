@@ -15,9 +15,8 @@ class Main:
         self.analysis = Analysis()
         self.menu = Menu()
         self.logger = Logger()
-        self.actions = Actions()
+        self.actions = Actions(self.database_path)
         self.database_path = "GuardianAngel.db"
-        self.actions = Actions("GuardianAngel.db")
 
 ## TODO: Change code to use the UI that mark is going to build 
 ## TODO: Build the UI
