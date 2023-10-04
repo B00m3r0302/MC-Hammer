@@ -167,6 +167,9 @@ class Scanner:
                                            INSERT INTO ExecutableDiscrepancies (FileName, FilePath, md5Hash)
                                            VALUES (?, ?, ?)
                             ''', (file, file_path, file_hash))
+                            
+                            self.actions.remove_executable(file_path)
+                            
                             commit_counter += 1
 
                         # Commit every 100 files for more consistent saving.
