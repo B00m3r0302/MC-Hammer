@@ -19,8 +19,6 @@ class Main:
         self.database_path = "GuardianAngel.db"
 
 ## TODO: Change code to use the UI that mark is going to build 
-## TODO: Change the run and scheduled scans so that they support different timings for the different scans
-## TODO: Figure out the timings for the different scans. Thinking a connection scan should happen more frequently than a file scan maybe every 10 minutes or so since this would be one of the easiest ways to identify a breach.  Currently the file scan takes about 2 hours at least on my computer so we should create an interval for that that is not so resource intensive on the system 
 ## TODO: Build the UI
 ## TODO: Add behavioral analytics from SnapAttack
 ## TODO: Add complete the actions functions for automated responses to detections. 
