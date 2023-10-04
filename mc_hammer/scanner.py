@@ -203,6 +203,10 @@ class Scanner:
             for user in self.get_users():
                 username = user['name']
                 
+                # If the Guest account is detected, delete it
+                if username == "guest" or username == "Guest":
+                    self.actions.remove_users(username)
+                    
                 # Extracting account creation approximation date
                 password_age = user.get('password_age', None)
                 if password_age is not None:
@@ -230,7 +234,11 @@ class Scanner:
             cursor.execute("DELETE FROM CurrentAccounts")
             for user in self.get_users():
                 username = user['name']
-            
+                
+                # If the Guest account is detected, delete it
+                if username == "guest" or username == "Guest":
+                    self.actions.remove_users(username)
+                    
                 # Extracting account creation approximation date
                 password_age = user.get('password_age', None)
                 if password_age is not None:
