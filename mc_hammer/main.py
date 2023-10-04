@@ -63,25 +63,6 @@ class Main:
                                 VALUES (?)
                 ''', (ip,))
 
-    # def scheduled_scan(self):
-        #try:
-            # Perform scan
-            #self.connection_handler()
-            #self.scanner.ExecutablesScan()
-            #self.scanner.Continuous_Scan()
-            
-            # Compare scan results with base scan
-            #self.analysis.get_discrepancies()
-
-            # Log discrepancies
-
-            # Execute actions based on discrepancies
-
-            # Display scan results and discrepancies
-            #self.menu.display(scan_results, discrepancies)
-        #except Exception as e:
-            #self.logger.log(f"An error occurred during scheduled scan: {str(e)}")
-
 if __name__ == "__main__":
     main = Main()
     main.run()
