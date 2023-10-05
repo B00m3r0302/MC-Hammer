@@ -1,5 +1,4 @@
 ## main.py
-import schedule
 import time
 from scanner import Scanner
 from analysis import Analysis
@@ -9,7 +8,7 @@ from actions import Actions
 import sqlite3
 import concurrent.futures
 import sys 
-sys.path.append("c:\\users\\hudso\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.11_qbz5n2kfra8p0\\localcache\\local-packages\\python311\\site-packages")
+# sys.path.append("c:\\users\\hudson\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.11_qbz5n2kfra8p0\\localcache\\local-packages\\python311\\site-packages")
 
 class Main:
     def __init__(self):
@@ -32,19 +31,6 @@ class Main:
             start_directory = "C:\\"
             self.scanner.Baseline_Scan(start_directory)
 
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                # Start the connection handler every 10 minutes in the thread pool
-                schedule.every(10).minutes.do(lambda: executor.submit(self.connection_handler))
-                
-                # Start the ExecutablesScan every 2.5 hours in the thread pool
-                schedule.every(150).minutes.do(lambda: executor.submit(self.scanner.ExecutablesScan))
-                
-                # Start the Continuous_Scan every 10 minutes in the thread pool
-                schedule.every(10).minutes.do(lambda: executor.submit(self.scanner.Continuous_Scan))
-                
-                while True:
-                    schedule.run_pending()
-                    time.sleep(1)
         except Exception as e:
             self.logger.log(f"An error occurred during scheduled scan: {str(e)}")
             
@@ -57,11 +43,6 @@ class Main:
             if ip not in trusted_IP:
                 self.logger.log(f"Blocking IP {ip}")
                 self.actions.block_IP(ip)
-                self.logger.log(f"IP {ip} blocked successfully")
-                cursor.execute('''
-                                INSERT INTO Blocked_IPs (IP_Address)
-                                VALUES (?)
-                ''', (ip,))
 
 if __name__ == "__main__":
     main = Main()
