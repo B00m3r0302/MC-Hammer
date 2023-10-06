@@ -3,7 +3,7 @@ import subprocess
 
 class Highest_Highest:
     def __init__(self, database_path):
-        database_path = database_path
+        self.database_path = database_path
         
     def setup_database(self):
         with sqlite3.connect(self.database_path) as conn:
@@ -21,7 +21,7 @@ class Highest_Highest:
             conn.commit()
             conn.close()
             
-    def LSASS_Access_From_Non_System_Account():
+    def LSASS_Access_From_Non_System_Account(self):
         with sqlite3.connect(self.database_path) as conn:
             cursor = conn.cursor()
         
