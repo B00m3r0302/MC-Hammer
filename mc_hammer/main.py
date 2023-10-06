@@ -8,6 +8,8 @@ from actions import Actions
 import sqlite3
 import concurrent.futures
 import sys 
+import sched
+
 # sys.path.append("c:\\users\\hudson\\appdata\\local\\packages\\pythonsoftwarefoundation.python.3.11_qbz5n2kfra8p0\\localcache\\local-packages\\python311\\site-packages")
 
 class Main:
@@ -18,6 +20,7 @@ class Main:
         self.logger = Logger()
         self.actions = Actions()
         self.database_path = "GuardianAngel.db"
+        self.s = sched.scheduler(time.time, time.sleep)
 
 ## TODO: Change code to use the UI that mark is going to build 
 ## TODO: Build the UI
@@ -34,13 +37,35 @@ class Main:
             if ip not in trusted_IP:
                 self.logger.log(f"Blocking IP {ip}")
                 self.actions.block_IP(ip)
-                
+     
+    def baseline_scan(self):
+        start_directory = "C:\\"
+        self.scanner.Baseline_Scan(start_directory)
+        
+    def scheduled_file_scan(self):
+        self.baseline_scan()
+        self.s.enter(7200, 1, self.scheduled_file_scan, ())
+        
+    def scheduled_scan(self):
+        self.connection_handler()
+        self.scanner.Continuous_Scan()
+        self.s.enter(900, 1, self.scheduled_scan, ())
+
     def run(self):
         try:
             # Initial scan
-            start_directory = "C:\\"
-            self.scanner.Baseline_Scan(start_directory)
+            self.baseline_scan()
             self.connection_handler()
+            self.scanner.Continuous_Scan()
+            
+            # Continuous scans
+            self.scheduled_scan()
+            self.scheduled_file_scan()
+            
+            # Scheduling
+            self.s.enter(7200, 1, self.scheduled_file_scan, ()) # Schedule the file scan to happen every 2 hours
+            self.s.enter(900, 1, self.scheudled_scan, ())
+            self.s.run()
 
         except Exception as e:
             self.logger.log(f"An error occurred during scheduled scan: {str(e)}")
