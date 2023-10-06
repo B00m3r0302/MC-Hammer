@@ -25,15 +25,6 @@ class Main:
 ## TODO: Add actions to actions.py based on detections from SnapAttack analytics 
 ## TODO: Find a way to include an AI agent, LLM, or ML into the program with deep learning and a neural network.  If not possible at this time then we should focus on ML and training the model against current detections with the automated responses. 
 ## TODO: Create an 'Alerts' table that combines all of the information from the other discrepancies tables into a single table for ease of use and viewing.
-    def run(self):
-        try:
-            # Initial scan
-            start_directory = "C:\\"
-            self.scanner.Baseline_Scan(start_directory)
-
-        except Exception as e:
-            self.logger.log(f"An error occurred during scheduled scan: {str(e)}")
-            
     def connection_handler(self):
         with sqlite3.connect(self.database_path) as conn:
             cursor = conn.cursor()
@@ -43,6 +34,16 @@ class Main:
             if ip not in trusted_IP:
                 self.logger.log(f"Blocking IP {ip}")
                 self.actions.block_IP(ip)
+                
+    def run(self):
+        try:
+            # Initial scan
+            start_directory = "C:\\"
+            self.scanner.Baseline_Scan(start_directory)
+            self.connection_handler()
+
+        except Exception as e:
+            self.logger.log(f"An error occurred during scheduled scan: {str(e)}")
 
 if __name__ == "__main__":
     main = Main()
