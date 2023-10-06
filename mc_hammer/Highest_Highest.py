@@ -2,8 +2,9 @@ import sqlite3
 import subprocess
 
 class Highest_Highest:
-    def __init__(self):
-        pass
+    def __init__(self, database_path):
+        database_path = database_path
+        
     def setup_database(self):
         with sqlite3.connect(self.database_path) as conn:
             cursor = conn.cursor()
