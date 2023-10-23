@@ -38,6 +38,19 @@ class DatabaseViewer:
         
         print(table)
 
+    def display_trusted_connections(self):
+        # Query TrustedConnections and retrieve all records
+        self.cursor.execute("SELECT * FROM TrustedConnections;")
+
+        rows = self.cursor.fetchall()
+
+        table = PrettyTable(["ID", "IP Address"])
+
+        for row in rows:
+            table.add_row([row[0], row[1]])
+
+        print(table)
+
     def close_connection(self):
         self.conn.close()
     

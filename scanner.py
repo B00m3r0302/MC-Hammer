@@ -6,94 +6,87 @@ import win32netcon
 import winreg
 import datetime
 import subprocess
+import ipaddress
+import socket
+import psutil
+from view_tables import DatabaseViewer
 from logger import Logger
 from actions import Actions
 
 class Scanner:
 
-    def __init__(self, database_path):
-        self.database_path = database_path
+    def __init__(self, db_name="GuardianAngel.db"):
+        self.db_name = db_name
         self.logger = Logger()
         self.actions = Actions()
-        self.setup_database()
+        self.conn = sqlite3.connect(db_name)
+        self.cursor = self.conn.cursor()
+    
+    def add_trusted_connection(self):
+        ip_input = input("Enter the IP address to add to the trusted connections list: ")
 
-    def setup_database(self):
-        with sqlite3.connect(self.database_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                           CREATE TABLE IF NOT EXISTS BaselineExecutables (
-                               id INTEGER PRIMARY KEY,
-                               FileName TEXT NOT NULL,
-                               FilePath TEXT NOT NULL,
-                               md5Hash TEXT NOT NULL
-                            )
-                        ''')
-            conn.commit()
+        # Get user input for the trusted ip addresses
+        try:
+            ipaddress.IPv4Address(ip_input)
+        except ValueError:
+            print("Invalid IPv4 address entered.")
+            return
+        
+        # Insert into database
+        try:
+            self.cursor.execute("INSERT INTO TrustedConnections (IPAddress) VALUES (?)", (ip_input,))
+            self.conn.commit()
+            print(f"IP address {ip_input} added to trusted connections list.")
+        except sqlite3.IntegrityError:
+            print(f"IP address {ip_input} already exists in the trusted connections list.")
 
-            cursor.execute('''
-                            CREATE TABLE IF NOT EXISTS ExecutableDiscrepancies (
-                                id INTEGER PRIMARY KEY,
-                                FileName TEXT NOT NULL,
-                                FilePath TEXT NOT NULL,
-                                md5Hash TEXT
-                            )
-                        ''')
-            conn.commit()
-            
-            cursor.execute('''
-                            CREATE TABLE IF NOT EXISTS BaselineAccounts (
-                                id INTEGER PRIMARY KEY,
-                                UserName TEXT NOT NULL,
-                                AccountCreationDate TEXT
-                            )
-                        ''')
-            conn.commit()
-            
-            cursor.execute('''
-                            CREATE TABLE IF NOT EXISTS AccountDiscrepancies (
-                                id INTEGER PRIMARY KEY,
-                                UserName TEXT NOT NULL,
-                                AccountCreationDate TEXT
-                            )
-                        ''')
-            conn.commit()
+    def remove_trusted_connection(self):
+        db_viewer = DatabaseViewer()
+        db_viewer.display_trusted_connections()
 
-            cursor.execute('''
-                           CREATE TABLE IF NOT EXISTS autoruns (
-                               id INTEGER PRIMARY KEY,
-                               name TEXT NOT NULL,
-                               value Text NOT NULL
-                            )
-                        ''')
-            conn.commit()
-            
-            cursor.execute('''
-                           CREATE TABLE IF NOT EXISTS CurrentConnections (
-                               id INTEGER PRIMARY KEY,
-                               local_ip TEXT NOT NULL,
-                               local_port INTEGER NOT NULL,
-                               remote_ip TEXT NOT NULL,
-                               remote_port INTEGER NOT NULL
-                            )
-                        ''')
-            conn.commit()
-            
-            cursor.execute('''
-                           CREATE TABLE IF NOT EXISTS TrustedConnections (
-                               id INTEGER PRIMARY KEY,
-                               IP_Address TEXT NOT NULL
-                            )
-                        ''')
-            conn.commit()
-            
-            cursor.execute ('''
-                            CREATE TABLE IF NOT EXISTS BlockedConnections (
-                                id INTEGER PRIMARY KEY,
-                                IP_Address TEXT NOT NULL
-                            )
-                        ''')
-            conn.commit()
-            
+        # Get user input for the trusted ip address to remove
+        try:
+            id_to_remove = int(input("Enter the ID of the IP address to remove: "))
+        except ValueError:
+            print("Invalid ID entered.")
+            return
+        
+        # Delete from database
+        self.cursor.execute("DELETE FROM TrustedConnections WHERE id = ?", (id_to_remove,))
+
+        if self.cursor.rowcount > 0:
+            print(f"IP address with ID {id_to_remove} removed from trusted connections list.")
+        else:
+            print("No IP address with that ID found in the trusted connections list.")
+
+        self.conn.commit()
+
+    def capture_and_store_connection_data(self):
+        connections = psutil.net_connections(kind='inet')
+
+        conn_data =[]
+        seen = set()
+        for conn in connections:
+            if conn.family == socket.AF_INET:
+                protocol = 'TCP' if conn.type == socket.SOCK_STREAM else 'UDP'
+            local_address, local_port = conn.laddr
+            foreign_address, foreign_port = conn.raddr if conn.raddr else (None, None)
+            state = conn.status
+
+            data_tuple = (protocol, local_address, local_port, foreign_address, foreign_port, state)
+
+            unwanted_tuple = ('UDP', '0.0.0.0', 0, None, None, 'NONE')
+            if data_tuple != unwanted_tuple and data_tuple not in seen:
+                conn_data.append(data_tuple)
+                seen.add(data_tuple)
+
+        self.cursor.executemany('''
+            INSERT INTO Connections (Protocol, Local_Address, Local_Port, Foreign_Address, Foreign_Port, State)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', conn_data)
+
+        self.conn.commit()
+
     def compute_md5(self, file_path):
         hasher = hashlib.md5()
         with open(file_path, 'rb') as file:
@@ -108,7 +101,7 @@ class Scanner:
         return os.path.isfile(file_path) and ext.lower() in ['.exe', '.bat', '.cmd', '.msi', '.ps1', 'py', '.vbs', '.dll']
 
     def BaselineExecutables_Scan(self, start_dir):
-        with sqlite3.connect(self.database_path) as conn:
+        with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
             commit_counter = 0
 
@@ -143,7 +136,7 @@ class Scanner:
             conn.commit()
 
     def CurrentExecutables_Scan(self, start_dir):
-        with sqlite3.connect(self.database_path) as conn:
+        with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
             commit_counter = 0
 
@@ -197,7 +190,7 @@ class Scanner:
         return users
 
     def BaselineUsers_Scan(self):
-        with sqlite3.connect(self.database_path) as conn:
+        with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
 
             for user in self.get_users():
@@ -227,7 +220,7 @@ class Scanner:
             conn.commit()
 
     def CurrentUsers_Scan(self):
-        with sqlite3.connect(self.database_path) as conn:
+        with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
 
             # Clear existing records from CurrentAccounts table
@@ -281,7 +274,7 @@ class Scanner:
         return data 
     
     def fetch_registry_autoruns(self):
-        with sqlite3.connect(self.database_path) as conn:
+        with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
             
         autorun_locations = [
@@ -302,7 +295,7 @@ class Scanner:
         conn.commit()
     # UPDATE THIS TO ADD THE ACTION INSTEAD OF THE CODE TO DELETE THE REGISTRY ENTRY
     def continuous_registry_autoruns(self):
-        with sqlite3.connect(self.database_path) as conn:
+        with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
         autorun_locations = [
         (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\Windows\\CurrentVersion\\Run"),
@@ -320,7 +313,7 @@ class Scanner:
                     self.actions.delete_registry_autorun(hive, subkey, name)
         
     def get_current_connections(self):
-        with sqlite3.connect(self.database_path) as conn:
+        with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
         result = subprocess.check_output("netstat -n").decode('utf-8').split('\n')
         connections = []
