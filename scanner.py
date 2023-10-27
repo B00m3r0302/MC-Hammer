@@ -68,7 +68,14 @@ class Scanner:
         seen = set()
         for conn in connections:
             if conn.family == socket.AF_INET:
-                protocol = 'TCP' if conn.type == socket.SOCK_STREAM else 'UDP'
+                if conn.family == socket.SOCK_STREAM:
+                    protocol = 'TCP'
+                elif conn.family == socket.SOCK_DGRAM:
+                    protocol = 'UDP'
+                else:
+                    protocol = 'UNKNOWN'
+            else:
+                protocol = 'UNKNOWN'
             local_address, local_port = conn.laddr
             if conn.raddr:
                 foreign_address, foreign_port = conn.raddr
@@ -291,7 +298,7 @@ class Scanner:
             data = self.fetch_registry_keys(hive, subkey)
             all_data.extend(data)
         
-        cursor.execute('''
+        cursor.executemany('''
                        INSERT INTO autoruns (name, value)
                        VALUES (?, ?)
         ''', all_data)
