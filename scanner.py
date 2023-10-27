@@ -70,7 +70,10 @@ class Scanner:
             if conn.family == socket.AF_INET:
                 protocol = 'TCP' if conn.type == socket.SOCK_STREAM else 'UDP'
             local_address, local_port = conn.laddr
-            foreign_address, foreign_port = conn.raddr if conn.raddr else (None, None)
+            if conn.raddr:
+                foreign_address, foreign_port = conn.raddr
+            else:
+                foreign_address, foreign_port = None, None
             state = conn.status
 
             data_tuple = (protocol, local_address, local_port, foreign_address, foreign_port, state)
@@ -291,7 +294,7 @@ class Scanner:
         cursor.execute('''
                        INSERT INTO autoruns (name, value)
                        VALUES (?, ?)
-        ''', (self.fetch_registry_keys(hive, subkey)))
+        ''', all_data)
         conn.commit()
     # UPDATE THIS TO ADD THE ACTION INSTEAD OF THE CODE TO DELETE THE REGISTRY ENTRY
     def continuous_registry_autoruns(self):
@@ -311,35 +314,6 @@ class Scanner:
                 cursor.execute('SELECT * FROM autoruns WHERE name = ? AND value = ?', (name, value))
                 if not cursor.fetchone():
                     self.actions.delete_registry_autorun(hive, subkey, name)
-        
-    def get_current_connections(self):
-        with sqlite3.connect(self.db_name) as conn:
-            cursor = conn.cursor()
-        result = subprocess.check_output("netstat -n").decode('utf-8').split('\n')
-        connections = []
-        
-        for line in result:
-            parts = line.split()
-            
-            # Ensuring that  the line has enough parts to be a valid connection 
-            if len(parts) >=3:
-                # Extracting local IP and port
-                local_ip, local_port_str = parts[1].rsplit(':', 1)
-                local_port = int(local_port_str) # Converting port to an integer
-                
-                # Extracting remote IP and port
-                remote_ip, remote_port_str = parts[2].rsplit(':', 1)
-                remote_port = int(remote_port_str)
-                
-                # Adding tuple (local_ip, local_port, remote_ip, remote_port) to connections list
-                connections.append((local_ip, local_port, remote_ip, remote_port))
-                cursor.execute('''
-                               INSERT INTO CurrentConnections (local_ip, local_port, remote_ip, remote_port)
-                               VALUES (?, ?, ?, ?)
-                ''', (local_ip, local_port, remote_ip, remote_port))
-                conn.commit()
-                
-        return connections
           
     def Baseline_Scan(self, start_dir):
         self.logger.log("Starting baseline Executables scan...")
@@ -353,6 +327,10 @@ class Scanner:
         self.logger.log("Starting baseline Autoruns scan...")
         self.fetch_registry_autoruns()
         self.logger.log("Baseline Autoruns scan complete.")
+        
+        self.logger.log("Starting baseline Connections scan...")
+        self.capture_and_store_connection_data()
+        self.logger.log("Baseline Connections scan complete.")
     
     def ExecutablesScan (self, start_dir):
         self.logger.log("Starting current Executables scan...")
@@ -373,6 +351,6 @@ class Scanner:
 
 if __name__ == "__main__":
     scanner = Scanner("GuardianAngel.db")
-    scanner.Baseline_Scan()
-    scanner.ExecutablesScan()
+    scanner.Baseline_Scan(start_dir="C:\\")
+    scanner.ExecutablesScan(start_dir= "C:\\")
     scanner.Continuous_Scan()

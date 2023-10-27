@@ -14,7 +14,7 @@ class App:
     def start_scan(self):
         try:
             # TODO: Make Sure this is the right function to call
-            self.scanner.scan_and_save()
+            self.scanner.Baseline_Scan(start_dir="C:\\")
             print("Scan complete!")
         except Exception as e:
             print(f"An error occurred while starting scan: {str(e)}")
@@ -50,7 +50,7 @@ class App:
             print("2. View Tables")
             print("3. Add Trusted Connections")
             print("4. Remove Trusted Connection")
-            print(f"5. View Alerts ({alert_count})")  # using f-string for variable substitution
+            print(f"5. View Alerts ({self.alerts})")  # using f-string for variable substitution
             print("6. Exit")
             print("---------------------------------------------")
             

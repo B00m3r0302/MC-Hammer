@@ -5,8 +5,10 @@ futures
 os
 hashlib
 win32net
-win32netcon
+pywin32
 winreg
 datetime
 subprocess
 cmd
+sqlalchemy
+blessed
