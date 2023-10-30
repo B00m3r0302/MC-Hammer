@@ -33,7 +33,7 @@ class Database:
             CREATE TABLE IF NOT EXISTS BaselineAccounts(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
-                AccountCreationDate TEXT NOT NULL,
+                AccountCreationDate TEXT NOT NULL
             )
         ''')
         self.conn.commit()
