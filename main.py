@@ -2,7 +2,6 @@
 import time
 from scanner import Scanner
 from analysis import Analysis
-from menu import Menu
 from logger import Logger
 from actions import Actions
 from ui import App
