@@ -37,15 +37,6 @@ class Database:
             )
         ''')
         self.conn.commit()
-
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS CurrentAccounts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                AccountCreationDate TEXT NOT NULL
-            )
-        ''')
-        self.conn.commit()
         
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS AccountDiscrepancies (
