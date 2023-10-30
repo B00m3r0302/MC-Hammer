@@ -2,7 +2,7 @@ from prettytable import PrettyTable
 import sqlite3
 
 class DatabaseViewer:
-    def __init__(self, db_name="GuardianAngel.db")
+    def __init__(self, db_name="GuardianAngel.db"):
         self.db_name = db_name
         self.conn = sqlite3.connect(db_name)
         self.cursor = self.conn.cursor()
