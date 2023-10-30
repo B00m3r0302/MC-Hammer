@@ -60,7 +60,7 @@ class Database:
         self.cursor.execute(''''
             CREATE TABLE IF NOT EXISTS TrustedConnections (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                IPAddress TEXT UNIQUE NOT NULL,
+                IPAddress TEXT UNIQUE NOT NULL
             )
         ''')
         self.conn.commit()
