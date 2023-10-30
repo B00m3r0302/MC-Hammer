@@ -57,7 +57,7 @@ class Database:
         self.conn.commit()
         
         # Create the TrustedConnections table if it doesn't exist
-        self.cursor.execute(''''
+        self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS TrustedConnections (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 IPAddress TEXT UNIQUE NOT NULL
