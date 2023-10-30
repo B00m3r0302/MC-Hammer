@@ -27,7 +27,7 @@ exit_flag = threading.Event()
 ## TODO: Find a way to include an AI agent, LLM, or ML into the program with deep learning and a neural network.  If not possible at this time then we should focus on ML and training the model against current detections with the automated responses. 
 ## TODO: Create an 'Alerts' table that combines all of the information from the other discrepancies tables into a single table for ease of use and viewing.
 
-def run_scanner(db_name):
+def run_scanner(db_name = db_name):
     # Create a SQLAlchemy engine and session
     engine = create_engine(f"sqlite:///{db_name}", poolclass=QueuePool)
     Session = sessionmaker(bind=engine)
