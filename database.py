@@ -78,18 +78,6 @@ class Database:
             )
         ''')
         self.conn.commit()
-
-        # Create the CurrentConnections table if it doesn't exist
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS CurrentConnections (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                local_ip TEXT NOT NULL,
-                local_port TEXT NOT NULL,
-                remote_ip TEXT NOT NULL,
-                remote_port TEXT NOT NULL
-            )
-        ''')
-        self.conn.commit()
         
         # Create the autoruns table if it doesn't exist
         self.cursor.execute('''
