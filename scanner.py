@@ -288,10 +288,10 @@ class Scanner:
             cursor = conn.cursor()
             
         autorun_locations = [
-        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\Windows\\CurrentVersion\\Run"),
-        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\Windows\\CurrentVersion\\RunOnce"),
-        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\Windows\\CurrentVersion\\Run"),
-        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\Windows\\CurrentVersion\\RunOnce"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"),
+        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\\Windows\\CurrentVersion\\Run"),
+        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce"),
         ]
         all_data = []
         for hive, subkey in autorun_locations:
@@ -308,10 +308,10 @@ class Scanner:
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
         autorun_locations = [
-        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\Windows\\CurrentVersion\\Run"),
-        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\Windows\\CurrentVersion\\RunOnce"),
-        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\Windows\\CurrentVersion\\Run"),
-        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\Windows\\CurrentVersion\\RunOnce"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce"),
+        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\\Windows\\CurrentVersion\\Run"),
+        (winreg.HKEY_CURRENT_USER, r"Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce"),
         ]
         
         for hive,subkey in autorun_locations:
