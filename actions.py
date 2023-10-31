@@ -9,14 +9,7 @@ class Actions:
     def __init__(self):
         self.database_path = "GuardianAngel.db"
         self.logger = Logger()
-
-    def fetch_trusted_IPs(self):
-        with sqlite3.connect(self.database_path) as conn:
-            cursor = conn.cursor()
-        cursor.execute("SELECT IP_Address FROM TrustedConnections")
-        trusted_ips = [row[0] for row in cursor.fetchall()]
-        conn.close()
-        return trusted_ips
+        self.scanner = Scanner()
 
     def block_IP(self, ip):
         try:

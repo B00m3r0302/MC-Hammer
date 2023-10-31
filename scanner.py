@@ -60,7 +60,23 @@ class Scanner:
             print("No IP address with that ID found in the trusted connections list.")
 
         self.conn.commit()
-
+    def is_trusted_connections_empty(self):
+        self.cursor.execute("SELECT COUNT(*) FROM TrustedConnections")
+        count = self.cursor.fetchone()[0]
+        return count == 0
+    
+    def block_untrusted_connections(self):
+        if not self.is_trusted_connections_empty():
+            self.cursor.execute("SELECT DISTINCT Foreign_Address FROM Connections WHERE Foreign_Address IS NOT NULL")
+            untrusted_ips = [row[0] for row in self.cursor.fetchall()]
+            
+            self.cursor.execute("SELECT IP FROM TrustedConnections")
+            trusted_ips = [row[0] for row in self.cursor.fetchall()]
+            
+            for ip in untrusted_ips:
+                if ip not in trusted_ips:
+                    self.actions.block_IP(ip)
+                    
     def capture_and_store_connection_data(self):
         connections = psutil.net_connections(kind='inet')
 
@@ -96,7 +112,9 @@ class Scanner:
         ''', conn_data)
 
         self.conn.commit()
-
+        
+        self.block_untrusted_connections()
+        
     def compute_md5(self, file_path):
         hasher = hashlib.md5()
         with open(file_path, 'rb') as file:
