@@ -1,7 +1,6 @@
 blessed
 os-sys
 pywin32
-winreg
 datetime
 ipaddress
 psutil
