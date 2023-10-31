@@ -11,9 +11,9 @@ class Database:
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS BaselineExecutables (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                path TEXT NOT NULL,
-                md5_hash TEXT
+                Filename TEXT NOT NULL,
+                Filepath TEXT NOT NULL,
+                md5Hash TEXT
             )
         ''')
         self.conn.commit()
@@ -21,9 +21,9 @@ class Database:
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS ExecutableDiscrepancies (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                path TEXT NOT NULL,
-                md5_hash TEXT
+                Filename TEXT NOT NULL,
+                Filepath TEXT NOT NULL,
+                md5Hash TEXT
             )
         ''')
         self.conn.commit()
