@@ -1,6 +1,5 @@
 blessed
 os-sys
-hashlib
 pywin32
 winreg
 datetime
