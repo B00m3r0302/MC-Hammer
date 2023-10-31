@@ -8,7 +8,6 @@ class Actions:
     def __init__(self):
         self.database_path = "GuardianAngel.db"
         self.logger = Logger()
-        self.scanner = Scanner()
 
     def block_IP(self, ip):
         try:
