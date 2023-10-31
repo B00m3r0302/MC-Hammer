@@ -4,6 +4,5 @@ pywin32
 datetime
 ipaddress
 psutil
-threading
 sqlalchemy
 prettytable
