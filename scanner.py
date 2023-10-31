@@ -5,7 +5,6 @@ import win32net
 import win32netcon
 import winreg
 import datetime
-import subprocess
 import ipaddress
 import socket
 import psutil

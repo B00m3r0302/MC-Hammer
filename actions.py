@@ -1,6 +1,5 @@
 import subprocess
 from logger import Logger
-import sqlite3
 import os
 import winreg
 
