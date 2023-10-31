@@ -4,7 +4,6 @@ pywin32
 datetime
 ipaddress
 psutil
-subprocess
 time
 threading
 sqlalchemy
