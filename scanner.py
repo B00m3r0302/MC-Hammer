@@ -36,6 +36,7 @@ class Scanner:
             self.cursor.execute("INSERT INTO TrustedConnections (IPAddress) VALUES (?)", (ip_input,))
             self.conn.commit()
             print(f"IP address {ip_input} added to trusted connections list.")
+            self.logger.log(f"IP address {ip_input} added to trusted connections list.")
         except sqlite3.IntegrityError:
             print(f"IP address {ip_input} already exists in the trusted connections list.")
 
@@ -55,6 +56,7 @@ class Scanner:
 
         if self.cursor.rowcount > 0:
             print(f"IP address with ID {id_to_remove} removed from trusted connections list.")
+            self.logger.log(f"IP address with ID {id_to_remove} removed from trusted connections list.")
         else:
             print("No IP address with that ID found in the trusted connections list.")
 
