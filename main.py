@@ -36,7 +36,7 @@ def run_scanner(db_name = db_name):
         # Create a new session for each loop iteration 
         session = Session()
         try:
-            scanner.Baseline_Scan("C:\\")
+            scanner.Continuous_Scan()
             session.commit()
         except Exception as e:
             session.rollback()
@@ -72,5 +72,6 @@ def run():
 
 if __name__ == "__main__":
     database.create_tables()
+    scanner.Baseline_Scan("C:\\")
     scanner.add_trusted_connection()
     run()

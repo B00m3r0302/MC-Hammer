@@ -353,8 +353,9 @@ class Scanner:
         self.continuous_registry_autoruns()
         self.logger.log("Current Autoruns scan complete.")
         
-
-
+        self.logger.log("Starting current Connections scan...")
+        self.capture_and_store_connection_data()
+        self.logger.log("Current Connections scan complete.")
 
 if __name__ == "__main__":
     scanner = Scanner("GuardianAngel.db")
