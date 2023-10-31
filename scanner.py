@@ -375,7 +375,7 @@ class Scanner:
         self.logger.log("Current Connections scan complete.")
 
 if __name__ == "__main__":
-    scanner = Scanner("GuardianAngel.db")
+    scanner = Scanner()
     scanner.Baseline_Scan(start_dir="C:\\")
     scanner.ExecutablesScan(start_dir= "C:\\")
     scanner.Continuous_Scan()
