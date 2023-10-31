@@ -1,15 +1,9 @@
 ## main.py
 import time
 from scanner import Scanner
-from analysis import Analysis
-from logger import Logger
-from actions import Actions
 from ui import App
 from database import Database
 import sqlite3
-import concurrent.futures
-import sys 
-import sched
 import threading
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -20,7 +14,6 @@ scanner = Scanner()
 db_name = "GuardianAngel.db"
 app = App()
 exit_flag = threading.Event()
-
 ## TODO: Build the UI
 ## TODO: Add behavioral analytics from SnapAttack 
 ## TODO: Add actions to actions.py based on detections from SnapAttack analytics 
@@ -47,19 +40,6 @@ def run_scanner(db_name = db_name):
         time.sleep(600)
 
 # Start the scanner in a separate thread so that it starts and runs at the same time as the UI which is when the script is run
-scanner_thread = threading.Thread(target=run_scanner)
-scanner_thread.daemon = True
-scanner_thread.start()
-
-def connection_handler(self):
-    with sqlite3.connect(self.database_path) as conn:
-        cursor = conn.cursor()
-    trusted_IP = self.actions.fetch_trusted_IPs(self.database_path)
-    current_connections = self.scanner.get_current_connections()
-    for ip in current_connections:
-        if ip not in trusted_IP:
-            self.logger.log(f"Blocking IP {ip}")
-            self.actions.block_IP(ip)
 
 def run():
     print("Welcome to MC-Hammer")
@@ -74,4 +54,7 @@ if __name__ == "__main__":
     database.create_tables()
     scanner.Baseline_Scan("C:\\")
     scanner.add_trusted_connection()
+    scanner_thread = threading.Thread(target=run_scanner)
+    scanner_thread.daemon = True
+    scanner_thread.start()
     run()
