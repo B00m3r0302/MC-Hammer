@@ -249,9 +249,7 @@ class Scanner:
     def CurrentUsers_Scan(self):
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
-
-            # Clear existing records from CurrentAccounts table
-            cursor.execute("DELETE FROM CurrentAccounts")
+            
             for user in self.get_users():
                 username = user['name']
                 
