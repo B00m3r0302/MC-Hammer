@@ -1,12 +1,10 @@
 blessed
-sqlite3
 os-sys
 hashlib
 pywin32
 winreg
 datetime
 ipaddress
-socket
 psutil
 subprocess
 time
