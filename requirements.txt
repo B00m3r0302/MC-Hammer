@@ -1,8 +1,8 @@
 blessed
-os-sys
 pywin32
 datetime
 ipaddress
 psutil
 sqlalchemy
 prettytable
+os-sys
