@@ -3,7 +3,6 @@ import time
 from scanner import Scanner
 from ui import App
 from database import Database
-import sqlite3
 import threading
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
